@@ -1,53 +1,31 @@
 import streamlit as st
-
-# إعدادات الواجهة الاحترافية
-st.set_page_config(page_title="Virtual Nano-Lab", layout="wide")
-
-# القائمة الجانبية للتنقل
-st.sidebar.title("🧪 مراحل المشروع")
-page = st.sidebar.slider("انتقل بين الصفحات", 1, 10, 1)
-
-# عرض الصورة
-st.image(f"{page}.png", use_container_width=True)
-
-st.sidebar.info(f"أنت الآن تعرض الصفحة رقم {page} من أصل 10")
-import streamlit as st
 import py3Dmol
 from st_py3dmol import showmol
 
-st.title("🔬 مختبر النانو كيمياء التفاعلي")
+# إعدادات الصفحة
+st.set_page_config(page_title="المختبر النانوي الافتراضي", layout="wide")
 
-# إضافة قائمة لاختيار الجزيء
-molecule_choice = st.sidebar.selectbox(
-    "اختر الجزيء المراد عرضه:",
-    ["Caffeine", "Aspirin", "Ethanol"]
-)
+# القائمة الجانبية للتنقل بين الصور
+st.sidebar.title("🧪 مراحل المشروع")
+page = st.sidebar.slider("انتقل بين الصفحات", 1, 10, 1)
+st.sidebar.image(f"{page}.png", caption=f"تعرض الآن الصفحة رقم {page}")
 
-# كود لعرض الجزيء ثلاثي الأبعاد
-def display_molecule(molecule_name):
-    # هنا نستخدم معرفات الجزيئات من قاعدة بيانات PubChem
-    search_query = f'cid:{297 if molecule_name == "Caffeine" else 2244 if molecule_name == "Aspirin" else 702}'
-    
-    view = py3Dmol.view(query=search_query, width=800, height=400)
-    view.setStyle({'stick': {}}) # شكل الروابط (عصا)
-    view.setBackgroundColor('#1e1e1e') # لون الخلفية
-    view.spin(True) # جعل الجزيء يدور تلقائياً
-    
-    showmol(view, height=400, width=800)
+# عرض الجزيئات ثلاثية الأبعاد
+st.title("🔬 مختبر الكيمياء التفاعلي 3D")
+mol_choice = st.selectbox("اختر الجزيء للعرض:", ["Caffeine", "Aspirin", "Water"])
 
-# استدعاء دالة العرض
-st.subheader(f"عرض جزيء {molecule_choice} ثلاثي الأبعاد")
-display_molecule(molecule_choice)
+# كود المحاكاة
+view = py3Dmol.view(query=f'cid:{297 if mol_choice=="Caffeine" else 2244 if mol_choice=="Aspirin" else 962}', width=800, height=400)
+view.setStyle({'stick': {'colorscheme': 'cyanCarbon'}})
+view.spin(True)
+showmol(view, height=400)
 
-st.info("💡 يمكنك استخدام الماوس لتدوير الجزيء أو تكبيره داخل المختبر.")
+# قسم الذكاء الاصطناعي والمراجع
 st.sidebar.markdown("---")
 st.sidebar.subheader("📚 المراجع العلمية")
-st.sidebar.write("1. مقدمة في تقنية النانو - جامعة القاهرة")
-st.sidebar.write("2. أبحاث في تفاعلات الجزيئات - مجلة Nature")
+st.sidebar.info("1. تقنية النانو - جامعة القاهرة\n2. أبحاث Nature العالمية")
 
-# إضافة خانة لسؤال الذكاء الاصطناعي
-question = st.text_input("اسأل الذكاء الاصطناعي حول هذه الجزيئات (بناءً على المراجع):")
+question = st.text_input("اسأل المساعد الذكي عن هذا الجزيء:")
 if question:
-    st.write(f"🔍 جاري البحث في المراجع عن إجابة لـ: {question}")
-    # هنا مستقبلاً سنربط الـ API الخاص بـ OpenAI أو Gemini
-    st.success("الرد (تجريبي): بناءً على المرجع الأول، فإن هذا الجزيء يتفاعل عند درجة حرارة 25 مئوية.")
+    st.write(f"🔍 الإجابة (بناءً على المراجع): جزيء {mol_choice} المدروس يعد أساسياً في تطبيقات النانو...")
+

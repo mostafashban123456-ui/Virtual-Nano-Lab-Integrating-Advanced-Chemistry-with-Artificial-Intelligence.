@@ -1,1 +1,1 @@
-streamlit
+streamlit-py3dmol

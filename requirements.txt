@@ -1,2 +1,2 @@
-streamlit-py3dmol
+streamlit
 py3Dmol

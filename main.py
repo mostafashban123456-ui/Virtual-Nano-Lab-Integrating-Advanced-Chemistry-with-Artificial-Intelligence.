@@ -1,39 +1,121 @@
 import streamlit as st
 import py3Dmol
 from st_py3dmol import showmol
+import time
 
-# Page Configuration
-st.set_page_config(page_title="Virtual Nano Lab", layout="wide")
+# --- 1. إعدادات الصفحة ---
+st.set_page_config(page_title="المنارة الأزهرية - المختبر الذكي", layout="wide")
 
-st.title("🔬 Virtual Nano-Chemistry Lab")
+# --- 2. نظام تسجيل الدخول ---
+if 'logged_in' not in st.session_state:
+    st.session_state['logged_in'] = False
 
-# Sidebar for Images (Your 1.png to 10.png)
-st.sidebar.title("Project Stages")
-page = st.sidebar.slider("Navigate Pages", 1, 10, 1)
-try:
-    st.sidebar.image(f"{page}.png", caption=f"Showing Page {page}")
-except:
-    st.sidebar.error("Image not found. Please check file names.")
+def login():
+    st.title("🔐 منصة المنارة الأزهرية - الدخول الآمن")
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        user = st.text_input("اسم المستخدم")
+        password = st.text_input("كلمة المرور", type="password")
+        if st.button("دخول للمختبر"):
+            if user == "admin" and password == "azhar2026": # كلمة المرور الجديدة
+                st.session_state['logged_in'] = True
+                st.rerun()
+            else:
+                st.error("خطأ في البيانات")
+    st.stop()
 
-# 3D Molecule Simulation
-st.subheader("Interactive 3D Molecular Visualization")
-option = st.selectbox("Select Molecule:", ["Caffeine", "Aspirin", "Water"])
+if not st.session_state['logged_in']:
+    login()
 
-# Dictionary for PubChem IDs
-mol_ids = {"Caffeine": 297, "Aspirin": 2244, "Water": 962}
+# --- 3. القائمة الجانبية ---
+with st.sidebar:
+    st.header("🔬 التحكم في المنارة")
+    menu = st.radio("القائمة:", ["الرئيسية", "تجارب الذكاء الاصطناعي", "المختبر التفاعلي 3D", "مراحل المشروع (10)", "المراجع العالمية"])
+    st.divider()
+    if st.button("خروج"):
+        st.session_state['logged_in'] = False
+        st.rerun()
 
-# Visualization Code
-view = py3Dmol.view(query=f'cid:{mol_ids[option]}', width=800, height=400)
-view.setStyle({'stick': {'colorscheme': 'cyanCarbon'}})
-view.spin(True)
-showmol(view, height=400)
+# --- 4. محتوى الأقسام ---
 
-# AI & References Section
-st.divider()
-st.sidebar.markdown("---")
-st.sidebar.subheader("📚 Scientific References")
-st.sidebar.info("1. Nanotechnology Essentials\n2. Nature Journal Research")
+# أ. قسم تجارب الذكاء الاصطناعي (الإضافة الجديدة)
+if menu == "تجارب الذكاء الاصطناعي":
+    st.header("🤖 محاكي التجارب الكيميائية بالذكاء الاصطناعي")
+    st.write("قم بخلط العناصر النانوية وشاهد التفاعل المشروح برمجياً.")
+    
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        st.subheader("إعداد التجربة")
+        substance_a = st.selectbox("المادة الأولى (Base):", ["Silver Nitrate (AgNO3)", "Gold Ions (AuCl4)", "Carbon Atoms"])
+        substance_b = st.selectbox("العامل المختزل (Reducing Agent):", ["Sodium Citrate", "Plant Extract", "Heat"])
+        
+        start_exp = st.button("بدء التجربة الذكية")
 
-user_input = st.text_input("Ask the AI Assistant about this molecule:")
-if user_input:
-    st.success(f"Based on the references, {option} is key in nano-systems.")
+    with col2:
+        if start_exp:
+            with st.spinner('جاري تحليل التفاعل بناءً على المراجع الـ 36...'):
+                time.sleep(2) # محاكاة وقت المعالجة
+                st.success("✅ اكتمل التفاعل!")
+                
+                # شرح النتيجة بناء على الاختيار
+                if "Gold" in substance_a:
+                    st.subheader("النتيجة: Gold Nanoparticles (AuNPs)")
+                    st.write("**المعادلة:** $AuCl_4^- + 3e^- \rightarrow Au^0$")
+                    st.info("📚 **الشرح العلمي:** تحول أيونات الذهب إلى جسيمات نانوية صلبة. هذا التفاعل هو أساس صناعة المستشعرات الطبية.")
+                    # عرض شكل الذهب النانوي
+                    view = py3Dmol.view(query='cid:23985', width=600, height=300)
+                    view.setStyle({'sphere': {}})
+                    showmol(view)
+                else:
+                    st.subheader("النتيجة: Silver Nanostructure")
+                    st.write("**المعادلة:** $Ag^+ + e^- \rightarrow Ag^0$")
+                    st.info("📚 **الشرح من المراجع:** الجسيمات النانوية الفضية الناتجة تمتلك خصائص مضادة للبكتيريا.")
+
+# ب. المختبر التفاعلي 3D
+elif menu == "المختبر التفاعلي 3D":
+    st.header("🧬 وحدة المحاكاة الجزيئية")
+    molecule = st.selectbox("اختر الجزيء للدراسة:", ["Caffeine", "Aspirin", "Fullerene C60", "DNA"])
+    
+    # ربط الجزيئات
+    cids = {"Caffeine": 297, "Aspirin": 2244, "Fullerene C60": 123591, "DNA": "pdb:1BNA"}
+    
+    view = py3Dmol.view(query=f'{"cid" if molecule != "DNA" else ""}:{cids[molecule]}', width=800, height=400)
+    view.setStyle({'stick': {'colorscheme': 'cyanCarbon'}})
+    view.spin(True)
+    showmol(view)
+    
+    st.markdown("---")
+    st.subheader("📊 تحليل الخواص (AI Analysis)")
+    st.write(f"بناءً على المراجع، جزيء **{molecule}** يتميز بـ:")
+    st.json({"الاستقرار الحراري": "عالي", "النشاط الكيميائي": "متوسط", "التطبيقات": "طبية/صناعية"})
+
+# ج. مراحل المشروع (الصور العشرة)
+elif menu == "مراحل المشروع (10)":
+    st.header("🖼️ مراحل بناء المنارة (توثيق كامل)")
+    step = st.select_slider("انتقل بين مراحل التنفيذ:", options=list(range(1, 11)))
+    
+    c1, c2 = st.columns([3, 1])
+    with c1:
+        try:
+            st.image(f"{step}.png", use_container_width=True)
+        except:
+            st.error(f"يرجى التأكد من وجود الصورة {step}.png في المشروع.")
+    with c2:
+        st.write(f"### المرحلة {step}")
+        descriptions = [
+            "جمع المراجع الـ 36 وتحليلها.",
+            "بناء الخوارزمية البرمجية للـ AI.",
+            "تصميم واجهة المستخدم التفاعلية.",
+            # أضف هنا باقي الـ 10 أوصاف
+        ]
+        st.write(descriptions[step-1] if step <= len(descriptions) else "شرح المرحلة متاح في المراجع الورقية.")
+
+# د. المراجع
+elif menu == "المراجع العالمية":
+    st.header("📚 قاعدة البيانات العلمية")
+    st.write("تحتوي المنارة على 36 مرجعاً عالمياً تم تغذية الذكاء الاصطناعي بها.")
+    st.table({
+        "اسم المرجع": ["أساسيات النانو", "Nature Nanotechnology", "كيمياء الجزيئات"],
+        "السنة": [2023, 2024, 2022],
+        "الحالة": ["مدمج بالكامل", "مدمج", "تحت التحليل"]
+    })

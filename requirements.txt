@@ -2,3 +2,4 @@ streamlit
 py3Dmol
 st-py3dmol
 ipython_genutils
+stmol

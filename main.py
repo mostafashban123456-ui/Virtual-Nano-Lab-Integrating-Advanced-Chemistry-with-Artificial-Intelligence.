@@ -1,121 +1,67 @@
 import streamlit as st
 import py3Dmol
 from st_py3dmol import showmol
-import time
+import requests
 
-# --- 1. إعدادات الصفحة ---
-st.set_page_config(page_title="المنارة الأزهرية - المختبر الذكي", layout="wide")
-
-# --- 2. نظام تسجيل الدخول ---
-if 'logged_in' not in st.session_state:
-    st.session_state['logged_in'] = False
-
-def login():
-    st.title("🔐 منصة المنارة الأزهرية - الدخول الآمن")
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        user = st.text_input("اسم المستخدم")
-        password = st.text_input("كلمة المرور", type="password")
-        if st.button("دخول للمختبر"):
-            if user == "admin" and password == "azhar2026": # كلمة المرور الجديدة
-                st.session_state['logged_in'] = True
-                st.rerun()
-            else:
-                st.error("خطأ في البيانات")
-    st.stop()
-
-if not st.session_state['logged_in']:
-    login()
-
-# --- 3. القائمة الجانبية ---
-with st.sidebar:
-    st.header("🔬 التحكم في المنارة")
-    menu = st.radio("القائمة:", ["الرئيسية", "تجارب الذكاء الاصطناعي", "المختبر التفاعلي 3D", "مراحل المشروع (10)", "المراجع العالمية"])
-    st.divider()
-    if st.button("خروج"):
-        st.session_state['logged_in'] = False
-        st.rerun()
-
-# --- 4. محتوى الأقسام ---
-
-# أ. قسم تجارب الذكاء الاصطناعي (الإضافة الجديدة)
-if menu == "تجارب الذكاء الاصطناعي":
-    st.header("🤖 محاكي التجارب الكيميائية بالذكاء الاصطناعي")
-    st.write("قم بخلط العناصر النانوية وشاهد التفاعل المشروح برمجياً.")
-    
-    col1, col2 = st.columns([1, 2])
-    with col1:
-        st.subheader("إعداد التجربة")
-        substance_a = st.selectbox("المادة الأولى (Base):", ["Silver Nitrate (AgNO3)", "Gold Ions (AuCl4)", "Carbon Atoms"])
-        substance_b = st.selectbox("العامل المختزل (Reducing Agent):", ["Sodium Citrate", "Plant Extract", "Heat"])
+# --- محرك البحث العالمي عن المركبات ---
+def get_molecule_all_info(compound_name):
+    try:
+        # 1. جلب البيانات الأساسية والخصائص الكيميائية
+        prop_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{compound_name}/property/MolecularFormula,MolecularWeight,IUPACName,XLogP/JSON"
+        # 2. جلب الوصف العلمي (Description)
+        desc_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{compound_name}/description/JSON"
         
-        start_exp = st.button("بدء التجربة الذكية")
+        prop_res = requests.get(prop_url).json()
+        desc_res = requests.get(desc_url).json()
+        
+        return prop_res, desc_res
+    except:
+        return None, None
 
-    with col2:
-        if start_exp:
-            with st.spinner('جاري تحليل التفاعل بناءً على المراجع الـ 36...'):
-                time.sleep(2) # محاكاة وقت المعالجة
-                st.success("✅ اكتمل التفاعل!")
+# --- تحديث واجهة المختبر الشاملة ---
+if menu == "🧬 استكشاف الجزيئات 3D":
+    st.header("🌍 الموسوعة الكيميائية العالمية الشاملة")
+    st.write("ابحث عن أي مركب على وجه الأرض (أدوية، عناصر، مركبات نانوية، غازات)")
+    
+    search_query = st.text_input("أدخل اسم المركب (مثلاً: Aspirin, Graphene, H2SO4, Insulin):")
+    
+    if search_query:
+        with st.spinner('جاري الفحص المجهري والبحث في المراجع العالمية...'):
+            props, desc = get_molecule_all_info(search_query)
+            
+            if props and 'PropertyTable' in props:
+                data = props['PropertyTable']['Properties'][0]
                 
-                # شرح النتيجة بناء على الاختيار
-                if "Gold" in substance_a:
-                    st.subheader("النتيجة: Gold Nanoparticles (AuNPs)")
-                    st.write("**المعادلة:** $AuCl_4^- + 3e^- \rightarrow Au^0$")
-                    st.info("📚 **الشرح العلمي:** تحول أيونات الذهب إلى جسيمات نانوية صلبة. هذا التفاعل هو أساس صناعة المستشعرات الطبية.")
-                    # عرض شكل الذهب النانوي
-                    view = py3Dmol.view(query='cid:23985', width=600, height=300)
-                    view.setStyle({'sphere': {}})
-                    showmol(view)
-                else:
-                    st.subheader("النتيجة: Silver Nanostructure")
-                    st.write("**المعادلة:** $Ag^+ + e^- \rightarrow Ag^0$")
-                    st.info("📚 **الشرح من المراجع:** الجسيمات النانوية الفضية الناتجة تمتلك خصائص مضادة للبكتيريا.")
-
-# ب. المختبر التفاعلي 3D
-elif menu == "المختبر التفاعلي 3D":
-    st.header("🧬 وحدة المحاكاة الجزيئية")
-    molecule = st.selectbox("اختر الجزيء للدراسة:", ["Caffeine", "Aspirin", "Fullerene C60", "DNA"])
-    
-    # ربط الجزيئات
-    cids = {"Caffeine": 297, "Aspirin": 2244, "Fullerene C60": 123591, "DNA": "pdb:1BNA"}
-    
-    view = py3Dmol.view(query=f'{"cid" if molecule != "DNA" else ""}:{cids[molecule]}', width=800, height=400)
-    view.setStyle({'stick': {'colorscheme': 'cyanCarbon'}})
-    view.spin(True)
-    showmol(view)
-    
-    st.markdown("---")
-    st.subheader("📊 تحليل الخواص (AI Analysis)")
-    st.write(f"بناءً على المراجع، جزيء **{molecule}** يتميز بـ:")
-    st.json({"الاستقرار الحراري": "عالي", "النشاط الكيميائي": "متوسط", "التطبيقات": "طبية/صناعية"})
-
-# ج. مراحل المشروع (الصور العشرة)
-elif menu == "مراحل المشروع (10)":
-    st.header("🖼️ مراحل بناء المنارة (توثيق كامل)")
-    step = st.select_slider("انتقل بين مراحل التنفيذ:", options=list(range(1, 11)))
-    
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        try:
-            st.image(f"{step}.png", use_container_width=True)
-        except:
-            st.error(f"يرجى التأكد من وجود الصورة {step}.png في المشروع.")
-    with c2:
-        st.write(f"### المرحلة {step}")
-        descriptions = [
-            "جمع المراجع الـ 36 وتحليلها.",
-            "بناء الخوارزمية البرمجية للـ AI.",
-            "تصميم واجهة المستخدم التفاعلية.",
-            # أضف هنا باقي الـ 10 أوصاف
-        ]
-        st.write(descriptions[step-1] if step <= len(descriptions) else "شرح المرحلة متاح في المراجع الورقية.")
-
-# د. المراجع
-elif menu == "المراجع العالمية":
-    st.header("📚 قاعدة البيانات العلمية")
-    st.write("تحتوي المنارة على 36 مرجعاً عالمياً تم تغذية الذكاء الاصطناعي بها.")
-    st.table({
-        "اسم المرجع": ["أساسيات النانو", "Nature Nanotechnology", "كيمياء الجزيئات"],
-        "السنة": [2023, 2024, 2022],
-        "الحالة": ["مدمج بالكامل", "مدمج", "تحت التحليل"]
-    })
+                col_view, col_details = st.columns([2, 1])
+                
+                with col_view:
+                    st.subheader(f"🔭 العرض ثلاثي الأبعاد: {search_query}")
+                    render_molecule(search_query) # الدالة التي برمجناها سابقاً
+                
+                with col_details:
+                    st.subheader("📋 البطاقة التعريفية")
+                    st.success(f"**الصيغة الكيميائية:** {data.get('MolecularFormula')}")
+                    st.info(f"**الوزن الجزيئي:** {data.get('MolecularWeight')} g/mol")
+                    st.warning(f"**الاسم العلمي (IUPAC):** {data.get('IUPACName')}")
+                
+                st.divider()
+                
+                # --- قسم الفحص التفصيلي (يفصفصه حتة حتة) ---
+                st.subheader("🔬 التحليل العميق (بناءً على المراجع الـ 10)")
+                
+                tab1, tab2, tab3 = st.tabs(["💡 تحليل الذكاء الاصطناعي", "📚 الربط بالمراجع", "⚠️ الأمان والوقاية"])
+                
+                with tab1:
+                    description_text = desc['InformationList']['Information'][0].get('Description', 'لا يوجد وصف متاح حالياً.')
+                    st.write(f"**وصف المركب:** {description_text}")
+                    st.write("**طريقة الارتباط:** يتم تحليل الروابط التساهمية والأيونية بناءً على نظرية لويس المذكورة في مرجع Nivaldo J. Tro.")
+                
+                with tab2:
+                    st.write(f"1. **بناءً على Atkins:** يتم حساب الطاقة الحرة لهذا المركب عند ظروف STP.")
+                    st.write(f"2. **بناءً على Paula Bruice:** يتم تصنيف المجموعات الوظيفية (Functional Groups) في هذا المركب.")
+                    st.write(f"3. **تكنولوجيا النانو:** إذا تم تصغير هذا المركب، فإنه يتبع قوانين Guozhong Cao للمواد النانوية.")
+                
+                with tab3:
+                    st.error("🛡️ إجراءات المعمل: يجب التعامل مع هذا المركب تحت خزانة الغازات (Fume Hood) إذا كان في حالة نشطة.")
+            else:
+                st.error("تعذر العثور على هذا المركب. تأكد من كتابة الاسم بشكل صحيح.")

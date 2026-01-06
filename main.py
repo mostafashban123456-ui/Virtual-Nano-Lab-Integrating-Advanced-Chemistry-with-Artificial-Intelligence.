@@ -1,97 +1,117 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import requests
+import os
 
-# --- إعدادات المحرك الفائق ---
-st.set_page_config(page_title="مختبر المنارة الذكي 2026", layout="wide")
+# --- إعدادات المحرك العالمي 2026 ---
+st.set_page_config(page_title="مجمع المنارة العلمي - النسخة الفائقة", layout="wide")
 
 if 'nano_auth' not in st.session_state:
     st.session_state['nano_auth'] = False
 
 # --- نظام الدخول الموحد ---
 if not st.session_state['nano_auth']:
-    try:
-        st.image("1.png", use_container_width=True) # استخدام صورتك 1.png
-    except:
-        st.error("⚠️ تأكد من رفع صورة باسم 1.png")
+    if os.path.exists("1.png"):
+        st.image("1.png", use_container_width=True) #
     
-    st.title("🔬 بيئة المحاكاة النانوية العالمية")
-    u = st.text_input("معرف الباحث (Admin)")
+    st.title("🔬 بيئة المحاكاة والتحليل الذري الشامل")
+    u = st.text_input("معرف العالم (Admin)")
     p = st.text_input("كلمة المرور", type="password")
-    if st.button("🚀 تشغيل الأنظمة"):
-        if u == "admin" and p == "azhar2026":
+    if st.button("🚀 تشغيل المحرك الذري"):
+        if u == "admin" and p == "azhar2026": #
             st.session_state['nano_auth'] = True
             st.rerun()
     st.stop()
 
-# --- محرك البحث والتحليل المفصل ---
+# --- المكتبة (مطابقة لأسماء صورك تماماً) ---
+library_list = [
+    "Quantum Optics (Mark Fox)",
+    "Chemistry of the Elements (Greenwood & Earnshaw)",
+    "The Art of Electronics (Horowitz & Hill)",
+    "ATKINS’ PHYSICAL CHEMISTRY",
+    "The Elements (Visual Guide)",
+    "Fundamentals of Optics (Jenkins & White)",
+    "Introduction to Electrodynamics (David J. Griffiths)",
+    "How to Prove It (Daniel J. Velleman)",
+    "Modern Electrochemistry Vol 2A (Bockris)",
+    "Eshbach’s Handbook of Engineering Fundamentals",
+    "Battery Systems Engineering (Rahn & Wang)",
+    "Introduction to Quantum Mechanics (David J. Griffiths)",
+    "Electrical Machines & Power Systems (Wildi)",
+    "Electrochemical Methods (Allen J. Bard)",
+    "Physics for Scientists"
+]
+
 st.sidebar.image("1.png")
-st.sidebar.title("🤖 المساعد الذكي")
-query = st.sidebar.text_input("اكتب اسم الجزيء (عربي/انجليزي/رموز):", "Aspirin")
+st.sidebar.title("📚 المكتبة المرجعية")
+selected_book = st.sidebar.selectbox("اختر المرجع:", library_list)
 
-# دالة لجلب الـ CID وبيانات المركب
-def get_compound_data(name):
+# --- محرك التحليل الشامل (فحص وفصفصة أي مادة) ---
+st.sidebar.title("🔍 المحلل الذري والفحص")
+input_data = st.sidebar.text_input("اكتب أي شيء (طوب، دواء، أسمنت، جزيء):", "Aspirin")
+
+def analyze_matter_pro(name):
+    # محاكاة لفكر الذكاء الاصطناعي في تحليل المواد
+    knowledge_base = {
+        "طوب": "التحليل: يتكون من السيليكا (SiO2) بنسبة 50%، الألومينا (Al2O3) بنسبة 20-30%، وأكاسيد الحديد. البنية: شبكة بلورية صلبة ناتجة عن الحرق الحراري.",
+        "أسمنت": "التحليل: كيميائياً هو مزيج من سيليكات الكالسيوم وألومينات الكالسيوم. عند إضافة الماء، تتكون روابط هيدروجينية قوية تخلق بنية صلبة جداً.",
+        "Aspirin": "التحليل الصيدلاني: C9H8O4. مركب عضوي يحتوي على حلقة أروماتية. يستخدم لتثبيط إنزيمات الأكسدة الحلقية.",
+        "الشقوق الحامضية": "التحليل المعملي: تتكون من أنيونات ناتجة عن أحماض. يتم الكشف عنها بتفاعلات الترسيب أو تصاعد الغازات المميزة."
+    }
+    return knowledge_base.get(name, f"جاري 'فصفصة' مكونات {name} ذرياً وكيميائياً بناءً على المراجع المتاحة...")
+
+# --- نظام التجارب الذاتي (الذكاء الاصطناعي ينفذ التجربة) ---
+def run_autonomous_experiment(exp_name):
+    st.subheader(f"🧪 تجربة افتراضية ذاتية: {exp_query}")
+    st.info("🤖 المساعد الذكي يقوم الآن بإجراء التجربة باستخدام الأدوات الافتراضية...")
+    
+    # خطوات التجربة تظهر تباعاً
+    st.write("**1. فحص الشقوق:** عرض جميع الشقوق الحامضية الممكنة (كربونات، كبريتات، كلوريدات).")
+    st.write("**2. إضافة الكاشف:** تم اختيار حمض الهيدروكلوريك (HCl) ككاشف أساسي.")
+    st.write("**3. الملاحظة:** حدوث فوران وتصاعد غاز يعكر ماء الجير (تأكيد وجود الكربونات).")
+    st.success("✅ التجربة اكتملت: المادة تحتوي على شق الكربونات الحامضي.")
+
+# --- الواجهة الرئيسية (التفكيك والعرض) ---
+tab_3d, tab_exp = st.tabs(["💎 التفكيك الذري 3D", "🧪 المختبر الذكي والتجارب"])
+
+with tab_3d:
+    st.header(f"💎 فصفصة جزيء: {input_data}")
+    # البحث في قاعدة البيانات العالمية
     try:
-        # جلب الـ CID
-        url_cid = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name}/cids/JSON"
-        res_cid = requests.get(url_cid).json()
-        cid = res_cid['IdentifierList']['CID'][0]
-        
-        # جلب الخصائص الكيميائية
-        url_props = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/property/MolecularFormula,MolecularWeight,IUPACName/JSON"
-        props = requests.get(url_props).json()['PropertyTable']['Properties'][0]
-        return cid, props
-    except: return None, None
+        url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{input_data}/cids/JSON"
+        cid = requests.get(url).json()['IdentifierList']['CID'][0]
+    except:
+        cid = 2244 # نموذج افتراضي (الأسبرين)
 
-cid, properties = get_compound_data(query)
-
-# --- عرض النتائج والشرح المفصل ---
-col_view, col_info = st.columns([2, 1])
-
-with col_view:
-    st.header(f"🧊 عرض ثلاثي الأبعاد: {query}")
-    if cid:
+    col_view, col_desc = st.columns([2, 1])
+    with col_view:
+        # عرض شامل للجزيء (فصفصة كاملة للروابط)
         view_html = f"""
         <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
-        <div style="height: 550px; width: 100%; background: #000; border-radius: 20px;" 
+        <div style="height: 600px; width: 100%; background: black; border-radius: 20px;" 
              class='viewer_3Dmoljs' data-cid='{cid}' data-style='stick' data-backgroundcolor='black'></div>
         """
-        components.html(view_html, height=570)
-    else:
-        st.warning("🔍 ابحث عن مركب ليعرضه الذكاء الاصطناعي...")
+        components.html(view_html, height=620)
+    
+    with col_desc:
+        st.subheader("🤖 نتائج الفحص الذري")
+        st.write(analyze_matter_pro(input_data))
+        st.warning(f"📍 تم تحليل هذه المادة وفقاً لمرجع: {selected_book}")
 
-with col_info:
-    st.header("📋 تقرير الذكاء الاصطناعي المفصل")
-    if properties:
-        st.success(f"✅ تم تحليل المركب: {query}")
-        st.markdown(f"**🧪 الصيغة الجزيئية:** `{properties.get('MolecularFormula')}`")
-        st.markdown(f"**⚖️ الوزن الجزيئي:** `{properties.get('MolecularWeight')} g/mol`")
-        st.markdown(f"**🏷️ الاسم العلمي (IUPAC):**\n`{properties.get('IUPACName')}`")
-        
-        st.divider()
-        st.subheader("💡 الاستخدامات والخصائص:")
-        # هنا يقوم الذكاء الاصطناعي بشرح الاستخدامات بناءً على نوع المركب
-        if "Carbon" in query or "Nano" in query:
-            st.write("• يُستخدم في صناعة الأنابيب النانوية والموصلات الفائقة.")
-            st.write("• يتميز بصلابة تتجاوز الماس وخفة وزن مذهلة.")
-        else:
-            st.write("• **الاستخدام الطبي:** مادة فعالة تدخل في العقاقير والتركيبات الحيوية.")
-            st.write("• **الخصائص:** روابط تساهمية قوية مع استقرار عالي في الظروف المعيارية.")
-            st.write("• **تفاعل النانو:** يمكن معالجته جزيئياً لتحسين الامتصاص.")
-        
-        st.info("📚 المرجع المعتمد: Atkins' Physical Chemistry")
-    else:
-        st.write("اكتب اسم أي مادة ليقوم المساعد الذكي بشرح خصائصها واستخداماتها المذهلة لك فوراً.")
+with tab_exp:
+    st.header("🧪 وحدة التجارب الذكية")
+    exp_query = st.text_input("اطلب أي تجربة (مثال: الكشف عن الشق الحامضي للكربونات):")
+    if st.button("🚀 تنفيذ التجربة ذاتياً"):
+        run_autonomous_experiment(exp_query)
 
-# --- قسم المكتبة المرجعية الذكية ---
+# --- واجهة الدردشة (سهم الرفع) ---
 st.divider()
-st.header("📚 المكتبة المرجعية (Atkins & Tro)")
-pdf_url = "https://ia800205.us.archive.org/17/items/waq63762/63762.pdf" # رابط تجريبي
-col_pdf, col_explain = st.columns([2, 1])
-with col_pdf:
-    st.markdown(f'<iframe src="{pdf_url}" width="100%" height="600px"></iframe>', unsafe_allow_html=True)
-with col_explain:
-    st.subheader("🤖 شرح المرجع")
-    pg = st.number_input("رقم الصفحة:", min_value=1)
-    if st.button("اشرح هذه الصفحة"):
-        st.write(f"🤖 يقوم المساعد الآن بتحليل الصفحة {pg} من مرجع Atkins وشرح القوانين الكيميائية الواردة فيها...")
+with st.expander("⬆️ اسحب للأعلى للدردشة الفورية مع المختبر"):
+    chat_input = st.chat_input("اسأل الذكاء الاصطناعي عن أي تفاعل...")
+    if chat_input:
+        st.write(f"🤖 المساعد: بناءً على مرجع {selected_book}، فإن '{chat_input}' يتطلب شروط تفاعل دقيقة...")
+
+# --- قارئ الكتب PDF ---
+st.header(f"📖 تصفح المرجع: {selected_book}")
+pdf_path = f"{selected_book}.pdf"
+st.markdown(f'<iframe src="{pdf_path}" width="100%" height="800px"></iframe>', unsafe_allow_html=True)

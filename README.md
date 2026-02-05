@@ -1,23 +1,26 @@
-# 🔬 Virtual Nano-Chemistry Lab
-**Integrating Advanced Chemistry with Artificial Intelligence**
+# 🔬 المختبر الافتراضي الشامل
 
-## 🌟 Overview
-This project is an interactive virtual laboratory designed to simulate nano-chemical interactions. It allows users to visualize molecular structures in 3D and interact with an AI assistant for scientific inquiries.
+بيئة علمية تفاعلية لتحليل المواد، محاكاة التجارب،  
+وعرض الجزيئات ثلاثية الأبعاد باستخدام الذكاء الاصطناعي.
 
-## 🚀 Key Features
-- **3D Molecular Visualization**: Explore chemical structures like Caffeine, Aspirin, and more in a fully interactive 3D environment.
-- **Interactive Stages**: View the 10 critical stages of the nano-project using the integrated slider.
-- **AI-Powered Insights**: Ask questions about molecules based on a library of 36 scientific references.
+## 🚀 التشغيل
+1. ثبت المتطلبات:
+   pip install -r requirements.txt
 
-## 🛠️ Files in this Repository
-- `main.py`: The core application code.
-- `requirements.txt`: List of necessary Python libraries.
-- `1.png` to `10.png`: Scientific visual aids for project stages.
+2. شغل التطبيق:
+   streamlit run main.py
 
-## 📚 References
-The AI and information in this lab are based on authoritative sources including:
-1. Introduction to Nanotechnology - Cairo University.
-2. Molecular Interaction Research - Nature Journal.
+## 🔐 تسجيل الدخول
+- اسم المستخدم: admin
+- كلمة المرور: azhar2026
 
----
-*Created by Mostafa Shaban*
+## 📚 المميزات
+- تحليل ذري وكيميائي
+- عرض جزيئات 3D
+- مختبر تجارب افتراضي
+- مكتبة علمية PDF
+- قابل للتوسع (رياضيات – فيزياء – نانو)
+
+## 🧠 الهدف
+بناء أساس علمي صلب لمحاكاة القوانين الفيزيائية  
+وتطوير مختبر ذكي يخدم البحث العلمي والتعليم.
